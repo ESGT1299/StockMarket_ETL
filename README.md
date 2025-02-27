@@ -72,19 +72,15 @@ pip install -r requirements.txt
 ### **3️⃣ Set Up PostgreSQL Database**
 Ensure PostgreSQL is installed and running.
 Create the database manually:   
-```sh
+```sql
 CREATE DATABASE finance_db;
 ``` 
 Create the stock_data table:
-```sh
-CREATE DATABASE finance_db;
-Create the stock_data table:
-sql
-Copiar
+```sql
 CREATE TABLE stock_data (
     id SERIAL PRIMARY KEY,
-    symbol VARCHAR NOT NULL,
-    date DATE NOT NULL,
+    symbol VARCHAR(10),
+    date DATE,
     open_price FLOAT,
     high_price FLOAT,
     low_price FLOAT,
@@ -96,16 +92,20 @@ CREATE TABLE stock_data (
 ```sh
 python etl_pipeline.py
 ```
----
 
-### 🔮 Future Improvements
-✅ **Deploy the ETL pipeline on AWS Lambda or Google Cloud**
-✅ **Build a Tableau Dashboard for stock price trends**
-✅ **Implement machine learning to predict stock prices**
+### **🔮 Future Improvements**
 
----
+**✅ Deploy the ETL pipeline on AWS Lambda or Google Cloud**
 
-### 📢 Author & Contact
-📌 **Author: Erick Guagua**
-📧 **Email: erick.guagua@yachaytech.edu.ec**
-🔗 **LinkedIn: [Your LinkedIn Profile](https://www.linkedin.com/in/erick-guagua-14b143214/)**
+**✅ Build a Tableau Dashboard for stock price trends**
+
+**✅ Implement machine learning to predict stock prices**
+
+### **📢 Author & Contact**
+
+**📌 Author: Erick Guagua**
+
+**📧 Email: erick.guagua@yachaytech.edu.ec**
+
+**🔗 LinkedIn: [Your LinkedIn Profile](https://www.linkedin.com/in/erick-guagua-14b143214/)**
+
