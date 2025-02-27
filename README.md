@@ -96,13 +96,16 @@ CREATE TABLE stock_data (
 ```sh
 python etl_pipeline.py
 ```
+---
 
-### **🔮 Future Improvements**
-**✅ Deploy the ETL pipeline on AWS Lambda or Google Cloud**
-**✅ Build a Tableau Dashboard for stock price trends**
-**✅ Implement machine learning to predict stock prices**
+### 🔮 Future Improvements
+✅ **Deploy the ETL pipeline on AWS Lambda or Google Cloud**
+✅ **Build a Tableau Dashboard for stock price trends**
+✅ **Implement machine learning to predict stock prices**
 
-### **📢 Author & Contact**
-**📌 Author: Erick Guagua**
-**📧 Email: erick.guagua@yachaytech.edu.ec**
-**🔗 LinkedIn: [Your LinkedIn Profile](https://www.linkedin.com/in/erick-guagua-14b143214/)**
+---
+
+### 📢 Author & Contact
+📌 **Author: Erick Guagua**
+📧 **Email: erick.guagua@yachaytech.edu.ec**
+🔗 **LinkedIn: [Your LinkedIn Profile](https://www.linkedin.com/in/erick-guagua-14b143214/)**
