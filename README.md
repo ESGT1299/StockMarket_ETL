@@ -1,111 +1,43 @@
-# StockMarket_ETL
+# Stock Market ETL: reliable financial data ingestion
 
-# 📊 Stock Market ETL Pipeline
+A Python portfolio project that fetches daily Yahoo Finance OHLCV data, validates it, and loads it into a dedicated PostgreSQL database. A SQLite/offline mode makes the core workflow reproducible without accounts, credentials, or network access.
 
-## 🚀 Overview
-This project is an **ETL (Extract, Transform, Load) pipeline** that retrieves stock market data from **Yahoo Finance**, processes it using **Pandas**, and loads it into a **PostgreSQL database**.
+## What this demonstrates
+- Source normalization for flat and two-level yfinance columns.
+- Explicit data-quality checks: missing/invalid prices, OHLC ranges, dates, integer volumes, and contradictory duplicate observations fail the run.
+- Atomic upserts keyed by `(symbol, date)`, rather than a race-prone read-before-insert deduplication step.
+- Transactional batches and corrected source-price updates.
+- Configuration through `DATABASE_URL`; no embedded credentials and no credential-bearing exception logging.
+- Repeatable tests and an honest distinction between demo results and production validation.
 
-The goal is to **automate stock data collection**, avoid duplicate entries, and store historical financial data for further analysis.
+## Quick start (offline)
 
----
-
-## 🔥 Technologies Used
-✅ **Python** (Data Extraction, Transformation)  
-✅ **Yahoo Finance API** (Stock Data Source)  
-✅ **Pandas** (Data Processing)  
-✅ **PostgreSQL** (Database for Storage)  
-✅ **SQLAlchemy** (Python to SQL Interface)  
-✅ **Git & GitHub** (Version Control & Collaboration)  
-✅ **Logging** (Monitoring & Debugging)
-
----
-
-## 📂 Project Structure
-📁 finance_project/ 
-├── etl_pipeline.py # Main ETL script 
-├── requirements.txt # Python dependencies 
-├── README.md # Project documentation 
-├── stock_data.sql # Sample SQL queries 
-├── config.py # Database credentials (hidden in .gitignore) 
-├── .gitignore # Ignore unnecessary files
-
-
----
-
-## 📌 Features
-✅ **Extracts stock data from Yahoo Finance**  
-✅ **Prevents duplicate entries using SQL**  
-✅ **Stores data securely in PostgreSQL**  
-✅ **Automated logging for debugging**  
-
----
-
-## 📊 Data Model (Database Schema)
-This project stores stock data in **PostgreSQL**, following this schema:
-
-| Column        | Data Type  | Description                          |
-|--------------|------------|--------------------------------------|
-| `id`        | SERIAL (PK) | Unique record identifier            |
-| `symbol`    | VARCHAR     | Stock ticker symbol (e.g., AAPL)    |
-| `date`      | DATE        | Trading date                        |
-| `open_price` | FLOAT      | Opening price of the stock          |
-| `high_price` | FLOAT      | Highest price of the day            |
-| `low_price`  | FLOAT      | Lowest price of the day             |
-| `close_price`| FLOAT      | Closing price of the stock          |
-| `volume`    | BIGINT      | Total shares traded                 |
-
----
-
-## 🚀 How to Run the Project
-
-### **1️⃣ Clone the Repository**
-```sh
-git clone https://github.com/ESGT1299/StockMarket_ETL
-cd StockMarket_ETL
-```
-
-### **2️⃣ Install Dependencies**
-```sh
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+$env:DATABASE_URL = 'sqlite:///demo.db'
+python etl_pipeline_prof.py --ticker DEMO --start 2024-01-01 --end 2024-02-01 --csv synthetic_prices.csv --init-schema
+python etl_pipeline_prof.py --ticker DEMO --start 2024-01-01 --end 2024-02-01 --csv synthetic_prices.csv
+python -m unittest test_etl -v
 ```
 
-### **3️⃣ Set Up PostgreSQL Database**
-Ensure PostgreSQL is installed and running.
-Create the database manually:   
-```sql
-CREATE DATABASE finance_db;
-``` 
-Create the stock_data table:
-```sql
-CREATE TABLE stock_data (
-    id SERIAL PRIMARY KEY,
-    symbol VARCHAR(10),
-    date DATE,
-    open_price FLOAT,
-    high_price FLOAT,
-    low_price FLOAT,
-    close_price FLOAT,
-    volume BIGINT
-);
-```
-### **4️⃣ Run the ETL Pipeline**
-```sh
-python etl_pipeline.py
-```
+The CSV is **synthetic test data**, not investment returns. Both runs process two observations and leave two rows, not four. The reported count is processed observations, not newly inserted records.
 
-### **🔮 Future Improvements**
+For live data, set `DATABASE_URL` privately to a dedicated demo PostgreSQL database, then omit `--csv`. Use ISO date arguments (`YYYY-MM-DD`); the end date is exclusive. Never put a real password in the command history, README, or Git. This program does not automatically read `.env` files.
 
-**✅ Deploy the ETL pipeline on AWS Lambda or Google Cloud**
+## Schema and existing installations
 
-**✅ Build a Tableau Dashboard for stock price trends**
+`--init-schema` is for a **new demo database only**. The table uses a composite primary key on symbol/date. It does not migrate an existing `stock_data` table from the old version. Back up and review existing data, resolve duplicate keys, and perform a separately reviewed migration before using this loader against an older database. Do not point this portfolio demo at production.
 
-**✅ Implement machine learning to predict stock prices**
+## Validation and limitations
 
-### **📢 Author & Contact**
+Unit tests cover parsing, rejection paths, repeated ingestion, multiple symbols and correction updates using SQLite. PostgreSQL SQL compilation is tested; a live PostgreSQL integration/concurrency test and live Yahoo availability are not claimed. The loader does not yet implement retries, scheduling, alerting or corporate-action-adjusted return calculations. Raw OHLC prices must not be used as total-return measures without adjustment. Market-data licensing and Yahoo Finance usage restrictions remain applicable.
 
-**📌 Author: Erick Guagua**
+## Security note
 
-**📧 Email: erick.guagua@yachaytech.edu.ec**
+An earlier source version included a database credential. Removing it from current code does **not** revoke it or erase Git history. The owner must rotate it anywhere it remains valid, check for reuse and review access. This update preserves repository history; no secret value is reproduced here.
 
-**🔗 LinkedIn: [Your LinkedIn Profile](https://www.linkedin.com/in/erick-guagua-14b143214/)**
+## Next evidence-driven extension
 
+Combine this validated ingestion with a data-quality report (missing sessions, stale observations and cross-provider checks), then feed a walk-forward risk dashboard. Keep data lineage and validation evidence with each output rather than adding unsupported performance claims.
